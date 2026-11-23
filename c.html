@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gloopy Blocks · Duelo</title>
+<meta name="robots" content="noindex">
+<!-- "Challenge a friend" landing page. Published in the public repo gloopy-blocks-legal (GitHub Pages).
+     Opens the game with gloopy://challenge?... (Android intent) or sends to the store. -->
+<style>
+:root{--bg1:#33206e;--bg2:#140a33;--pink:#ff6fa8;--yellow:#ffd23f}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:grid;place-items:center;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#fff;
+  background:radial-gradient(120% 70% at 50% 0%,var(--bg1),var(--bg2) 70%) fixed;background-color:var(--bg2);padding:24px 16px}
+main{max-width:420px;width:100%;text-align:center}
+.logo{font-size:44px;font-weight:800;letter-spacing:2px}
+.logo span:nth-child(1){color:#ff6fa8}.logo span:nth-child(2){color:#ff9a3c}.logo span:nth-child(3){color:#ffd23f}
+.logo span:nth-child(4){color:#62d856}.logo span:nth-child(5){color:#25d0c0}.logo span:nth-child(6){color:#4b97ff}
+.sub{letter-spacing:8px;font-weight:700;margin-bottom:22px}
+.card{background:#ffffff14;border-radius:22px;padding:22px 18px;box-shadow:0 0 0 2px #ffffff22}
+.vs{font-size:20px;line-height:1.4;margin:0 0 6px}
+.score{font-size:56px;font-weight:800;color:var(--yellow);margin:6px 0 14px}
+a.btn{display:block;text-decoration:none;color:#fff;font-weight:800;font-size:19px;padding:15px;border-radius:18px;margin-top:12px;
+  background:linear-gradient(#ff8fbd,var(--pink));box-shadow:0 6px 0 #c23472}
+a.btn.store{background:#ffffff1f;box-shadow:none;font-size:16px}
+small{display:block;margin-top:16px;opacity:.7;line-height:1.4}
+</style>
+</head>
+<body>
+<main>
+  <div class="logo"><span>G</span><span>L</span><span>O</span><span>O</span><span>P</span><span>Y</span></div>
+  <div class="sub">BLOCKS</div>
+  <div class="card">
+    <p class="vs" id="vs"></p>
+    <div class="score" id="score"></div>
+    <a class="btn" id="open" href="#">⚔️</a>
+    <a class="btn store" id="store" href="https://play.google.com/store/apps/details?id=com.gloopy.blocks"></a>
+    <small id="hint"></small>
+  </div>
+</main>
+<script>
+(function(){
+  var T={
+    es:{vs:'⚔️ {n} te reta en Gloopy Blocks',open:'⚔️ Aceptar el reto',store:'Descargar Gloopy Blocks',hint:'Jugarás exactamente el mismo tablero y las mismas 30 piezas. Si no se abre el juego, descárgalo primero.',friend:'Un amigo'},
+    en:{vs:'⚔️ {n} challenges you in Gloopy Blocks',open:'⚔️ Accept the challenge',store:'Get Gloopy Blocks',hint:'You will play exactly the same board and 30 pieces. If the game does not open, install it first.',friend:'A friend'},
+    pt:{vs:'⚔️ {n} te desafia no Gloopy Blocks',open:'⚔️ Aceitar o desafio',store:'Baixar Gloopy Blocks',hint:'Você vai jogar exatamente o mesmo tabuleiro e as mesmas 30 peças. Se o jogo não abrir, instale primeiro.',friend:'Um amigo'},
+    fr:{vs:'⚔️ {n} te défie sur Gloopy Blocks',open:'⚔️ Accepter le défi',store:'Télécharger Gloopy Blocks',hint:'Tu joueras exactement le même plateau et les mêmes 30 pièces. Si le jeu ne s’ouvre pas, installe-le d’abord.',friend:'Un ami'},
+    de:{vs:'⚔️ {n} fordert dich in Gloopy Blocks heraus',open:'⚔️ Herausforderung annehmen',store:'Gloopy Blocks laden',hint:'Du spielst genau dasselbe Brett und dieselben 30 Teile. Öffnet sich das Spiel nicht, installiere es zuerst.',friend:'Ein Freund'},
+    it:{vs:'⚔️ {n} ti sfida a Gloopy Blocks',open:'⚔️ Accetta la sfida',store:'Scarica Gloopy Blocks',hint:'Giocherai esattamente lo stesso tabellone e gli stessi 30 pezzi. Se il gioco non si apre, installalo prima.',friend:'Un amico'},
+    ja:{vs:'⚔️ {n}からGloopy Blocksの挑戦状',open:'⚔️ 挑戦を受ける',store:'Gloopy Blocksを入手',hint:'まったく同じ盤面と30個のピースで遊びます。ゲームが開かない場合は先にインストールしてね。',friend:'友だち'}
+  };
+  var q=new URLSearchParams(location.search);
+  var nav=(navigator.language||'en').slice(0,2).toLowerCase(),L=T[nav]||T[q.get('l')]||T.en;
+  var s=parseInt(q.get('s'),10),p=parseInt(q.get('p'),10),n=(q.get('n')||L.friend).replace(/[<>]/g,'').slice(0,16);
+  var valid=s>0&&s<4e9&&p>=0&&p<1e7;
+  // textContent only: the name comes from the link and is never parsed as HTML
+  document.getElementById('vs').textContent=L.vs.replace('{n}',n);
+  document.getElementById('score').textContent=valid?p.toLocaleString():'';
+  document.getElementById('store').textContent=L.store;
+  document.getElementById('hint').textContent=L.hint;
+  var open=document.getElementById('open');open.textContent=L.open;
+  var qs='s='+s+'&p='+p+'&n='+encodeURIComponent(n);
+  var store='https://play.google.com/store/apps/details?id=com.gloopy.blocks';
+  if(!valid){open.style.display='none';}
+  else if(/Android/i.test(navigator.userAgent)){
+    open.href='intent://challenge?'+qs+'#Intent;scheme=gloopy;package=com.gloopy.blocks;S.browser_fallback_url='+encodeURIComponent(store)+';end';
+  }else{open.href='gloopy://challenge?'+qs;}
+})();
+</script>
+</body>
+</html>
