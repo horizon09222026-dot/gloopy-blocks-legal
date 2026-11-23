@@ -60,7 +60,9 @@ small{display:block;margin-top:16px;opacity:.7;line-height:1.4}
   document.getElementById('hint').textContent=L.hint;
   var open=document.getElementById('open');open.textContent=L.open;
   var qs='s='+s+'&p='+p+'&n='+encodeURIComponent(n);
-  var store='https://play.google.com/store/apps/details?id=com.gloopy.blocks';
+  // the duel travels inside the store link (Install Referrer), so it starts right after a fresh install
+  var store='https://play.google.com/store/apps/details?id=com.gloopy.blocks'+(valid?'&referrer='+encodeURIComponent(qs):'');
+  document.getElementById('store').href=store;
   if(!valid){open.style.display='none';}
   else if(/Android/i.test(navigator.userAgent)){
     open.href='intent://challenge?'+qs+'#Intent;scheme=gloopy;package=com.gloopy.blocks;S.browser_fallback_url='+encodeURIComponent(store)+';end';
